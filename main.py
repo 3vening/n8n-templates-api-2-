@@ -144,3 +144,7 @@ def get_collection(collection_id: str):
     if not col:
         raise HTTPException(status_code=404, detail="Not Found")
     return col
+
+@app.get("/health")
+def health():
+    return {"ok": True}
