@@ -148,3 +148,10 @@ def get_collection(collection_id: str):
 @app.get("/health")
 def health():
     return {"ok": True}
+
+@app.get("/templates/search")
+def search_templates():
+    return [
+        {"id": "welcome-email", "name": "Welcome Email", "description": "Send a welcome email"},
+        {"id": "slack-alert", "name": "Slack Alert", "description": "Send alerts to Slack"}
+    ]
