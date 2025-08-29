@@ -179,3 +179,29 @@ def get_workflow(workflow_id: str):
     if not wf:
         raise HTTPException(status_code=404, detail="Not Found")
     return wf
+
+# --- categories ---
+CATEGORIES = [
+    {"id": "email", "name": "Email"},
+    {"id": "crm", "name": "CRM"},
+]
+
+@app.get("/templates/categories")
+def get_categories():
+    return {"items": CATEGORIES}
+
+# --- collections (optional) ---
+COLLECTIONS = [
+    {"id": "starters", "name": "Starters", "workflowIds": ["welcome-email"]},
+]
+
+@app.get("/templates/collections")
+def get_collections():
+    return {"items": COLLECTIONS}
+
+@app.get("/templates/collections/{collection_id}")
+def get_collection(collection_id: str):
+    for c in COLLECTIONS:
+        if c["id"] == collection_id:
+            return c
+    raise HTTPException(status_code=404, detail="Not Found")
