@@ -205,3 +205,52 @@ def get_collection(collection_id: str):
         if c["id"] == collection_id:
             return c
     raise HTTPException(status_code=404, detail="Not Found")
+
+from typing import Optional
+from fastapi import Query
+
+@app.get("/templates/search")
+def search_templates(
+    page: int = Query(1, ge=1),
+    rows: int = Query(50, ge=1, le=200),
+    category: Optional[str] = Query(None),
+    search: Optional[str] = Query(None),
+):
+    items = list(WORKFLOWS.values())
+    if search:
+        s = search.lower()
+        items = [w for w in items if s in (w.get("name","") + " " + w.get("description","")).lower()]
+    if category:
+        items = [w for w in items if category in w.get("categories", [])]
+
+    total = len(items)
+    start = (page - 1) * rows
+    end = start + rows
+    page_items = items[start:end]
+
+    return {
+        "items": [{"id": w["id"], "name": w["name"], "description": w["description"]} for w in page_items],
+        "page": page,
+        "rows": rows,
+        "total": total,
+    }
+
+@app.get("/templates/collections")
+def get_collections(
+    search: Optional[str] = Query(None),
+    category: Optional[str] = Query(None),
+):
+    items = COLLECTIONS
+    if search:
+        s = search.lower()
+        items = [c for c in items if s in c["name"].lower()]
+    if category:
+        items = [
+            c for c in items
+            if any(category in WORKFLOWS[w].get("categories", []) for w in c.get("workflowIds", []) if w in WORKFLOWS)
+        ]
+    return {"items": items}
+
+@app.get("/templates/categories")
+def get_categories():
+    return {"items": CATEGORIES}
