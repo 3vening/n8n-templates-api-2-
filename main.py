@@ -155,3 +155,27 @@ def search_templates():
         {"id": "welcome-email", "name": "Welcome Email", "description": "Send a welcome email"},
         {"id": "slack-alert", "name": "Slack Alert", "description": "Send alerts to Slack"}
     ]
+
+from fastapi import HTTPException
+
+# Replace the nodes/connections with a real export later.
+WORKFLOWS = {
+    "welcome-email": {
+        "id": "welcome-email",
+        "name": "Welcome Email Autoresponder",
+        "description": "Sends a welcome email when a contact is created.",
+        "categories": ["email", "crm"],
+        "tags": ["starter"],
+        "workflow": {
+            "nodes": [],
+            "connections": {}
+        }
+    }
+}
+
+@app.get("/templates/workflows/{workflow_id}")
+def get_workflow(workflow_id: str):
+    wf = WORKFLOWS.get(workflow_id)
+    if not wf:
+        raise HTTPException(status_code=404, detail="Not Found")
+    return wf
